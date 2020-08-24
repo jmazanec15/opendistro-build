@@ -9,8 +9,10 @@
 #                as defined in the 'plugins.json' file
 #
 # Usage:         ./plugins-info $PLUGINS_TYPE [$RETURN_TYPE] [$GITHUB_TOKEN_PAT]
-#                $PLUGINS_TYPE: <check plugins.json> (required)
-#                $RETURN_TYPE: <default to name> | --git (optional)
+#                $PLUGINS_TYPE: <check plugins.json for several types there> (required)
+#                $RETURN_TYPE: <default to name or use --s3>
+#                              --git (optional)
+#                              --cutversions (optional)
 #                $GITHUB_TOKEN_PAT: GitHub Personal Access Token for API Calls Here (optional)
 #
 # Starting Date: 2020-06-24
@@ -40,6 +42,10 @@ then
 elif [ -z "$RETURN_TYPE" ] || [ "$RETURN_TYPE" = "--s3" ]
 then
   jq -r ".${PLUGINS_TYPE}[].s3" "${PLUGINS_LIST}"
+
+elif [ "$RETURN_TYPE" = "--cutversions" ]
+then
+  jq -r ".${PLUGINS_TYPE}[].cutversions" "${PLUGINS_LIST}"
 
 fi
 

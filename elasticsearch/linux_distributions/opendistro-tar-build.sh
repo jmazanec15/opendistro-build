@@ -20,13 +20,18 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 ROOT=`dirname $(realpath $0)`; echo $ROOT; cd $ROOT
 ES_VERSION=`$REPO_ROOT/bin/version-info --es`; echo $ES_VERSION
 OD_VERSION=`$REPO_ROOT/bin/version-info --od`; echo $OD_VERSION
+IS_CUT=`$REPO_ROOT/bin/version-info --is-cut`; echo Is Cut: $IS_CUT`
 S3_BUCKET="artifacts.opendistroforelasticsearch.amazon.com"
 ARTIFACTS_URL="https://d3g5vo6xdbdb9a.cloudfront.net"
 PACKAGE_NAME="opendistroforelasticsearch"
 TARGET_DIR="$ROOT/target"
+plugin_version=$OD_VERSION
 
 # Please DO NOT change the orders, they have dependencies
 PLUGINS=`$REPO_ROOT/bin/plugins-info zip`
+read -r -a PLUGINS_ARRAY <<< "${PLUGINS}"
+CUT_VERSIONS=`$REPO_ROOT/bin/plugins-info zip --cutversions`
+read -r -a CUT_VERSIONS_ARRAY <<< "${CUT_VERSIONS}"
 
 basedir="${ROOT}/${PACKAGE_NAME}-${OD_VERSION}/plugins"
 #PLUGINS_CHECKS=`$REPO_ROOT/bin/plugins-info zip | awk -F '/' '{print $2}' | sed "s@^@$basedir\/@g"`
@@ -49,9 +54,15 @@ tar -xzf elasticsearch-oss-$ES_VERSION-linux-x86_64.tar.gz --strip-components=1 
 cp -v opendistro-tar-install.sh $PACKAGE_NAME-$OD_VERSION
 
 # Install Plugin
-for plugin_path in $PLUGINS
+for index in ${!PLUGINS_ARRAY[@]}
 do
-  plugin_latest=`aws s3api list-objects --bucket $S3_BUCKET --prefix "downloads/elasticsearch-plugins/${plugin_path}-${OD_VERSION}" --query 'Contents[].[Key]' --output text | sort | tail -n 1`
+  if [ "$IS_CUT" = "true" ]
+  then
+    plugin_version=${CUT_VERSIONS[$index]}
+  fi
+
+  plugin_path=${PLUGINS_ARRAY[$index]}
+  plugin_latest=`aws s3api list-objects --bucket $S3_BUCKET --prefix "downloads/elasticsearch-plugins/${plugin_path}-${plugin_version}" --query 'Contents[].[Key]' --output text | sort | tail -n 1`
   echo "installing $plugin_latest"
   $PACKAGE_NAME-$OD_VERSION/bin/elasticsearch-plugin install --batch "${ARTIFACTS_URL}/${plugin_latest}"; \
 done
