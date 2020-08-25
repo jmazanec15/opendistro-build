@@ -19,14 +19,16 @@
 # Maintainer:    ODFE Infra Team
 # Language:      Python
 #
-# About:         Print the ES/ODFE version for the current/previous branches
+# About:         Print the ES/ODFE/VersionCut related information and values
 #                as defined in the 'version.json' file
 #
 # Usage:         [python] ./version-info $VERSION_TYPE
-#                $VERSION_TYPE: --od | --od-prev | --es | --es-prev (required)
+#                $VERSION_TYPE (required): --od | --od-prev | --od-next
+#                                          --es | --es-prev | --es-next
+#                                          --is-cut
 #
 # Starting Date: 2019-05-15
-# Modified Date: 2020-07-30
+# Modified Date: 2020-08-24
 ###############################################################################################
 
 import sys
@@ -64,7 +66,7 @@ def get_od_version(user_param):
         else:
           return(get_hard_coded_version('odVersion', 'current'))
 
-def get_is_cut(user_param):
+def get_version_cut(user_param):
     if user_param == '--is-cut':
       return(get_hard_coded_version('versionCut', 'is_cut'))
 
