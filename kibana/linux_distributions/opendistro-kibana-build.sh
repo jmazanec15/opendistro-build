@@ -40,9 +40,9 @@ plugin_version=$OD_VERSION
 
 # Please DO NOT change the orders, they have dependencies
 PLUGINS=`$REPO_ROOT/bin/plugins-info kibana`
-read -r -a PLUGINS_ARRAY <<< "${PLUGINS}"
-CUT_VERSIONS=`$REPO_ROOT/bin/plugins-info zip --cutversions`
-read -r -a CUT_VERSIONS_ARRAY <<< "${CUT_VERSIONS}"
+PLUGINS_ARRAY=($PLUGINS )
+CUT_VERSIONS=`$REPO_ROOT/bin/plugins-info kibana --cutversions`
+CUT_VERSIONS_ARRAY=( $CUT_VERSIONS )
 
 basedir="${ROOT}/${PACKAGE_NAME}/plugins"
 PLUGINS_CHECKS=`$REPO_ROOT/bin/plugins-info kibana | awk -F '/' '{print $2}' | sed "s@^@$basedir\/@g"`

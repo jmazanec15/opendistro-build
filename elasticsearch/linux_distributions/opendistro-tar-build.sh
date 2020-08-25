@@ -29,9 +29,9 @@ plugin_version=$OD_VERSION
 
 # Please DO NOT change the orders, they have dependencies
 PLUGINS=`$REPO_ROOT/bin/plugins-info zip`
-read -r -a PLUGINS_ARRAY <<< "${PLUGINS}"
+PLUGINS_ARRAY=( $PLUGINS )
 CUT_VERSIONS=`$REPO_ROOT/bin/plugins-info zip --cutversions`
-read -r -a CUT_VERSIONS_ARRAY <<< "${CUT_VERSIONS}"
+CUT_VERSIONS_ARRAY=( $CUT_VERSIONS )
 
 basedir="${ROOT}/${PACKAGE_NAME}-${OD_VERSION}/plugins"
 #PLUGINS_CHECKS=`$REPO_ROOT/bin/plugins-info zip | awk -F '/' '{print $2}' | sed "s@^@$basedir\/@g"`
