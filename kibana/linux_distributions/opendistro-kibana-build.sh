@@ -28,9 +28,9 @@ set -e
 # Initialize directories
 REPO_ROOT=`git rev-parse --show-toplevel`
 ROOT=`dirname $(realpath $0)`; echo $ROOT; cd $ROOT
-ES_VERSION=`$REPO_ROOT/bin/version-info --es`; echo $ES_VERSION
-OD_VERSION=`$REPO_ROOT/bin/version-info --od`; echo $OD_VERSION
-IS_CUT=`$REPO_ROOT/bin/version-info --is-cut`; echo Is Cut: $IS_CUT
+ES_VERSION=`$REPO_ROOT/bin/version-info --es`; echo ES_VERSION: $ES_VERSION
+OD_VERSION=`$REPO_ROOT/bin/version-info --od`; echo OD_VERSION: $OD_VERSION
+IS_CUT=`$REPO_ROOT/bin/version-info --is-cut`; echo IS_CUT: $IS_CUT
 PACKAGE_TYPE=$1
 S3_BUCKET="artifacts.opendistroforelasticsearch.amazon.com"
 ARTIFACTS_URL="https://d3g5vo6xdbdb9a.cloudfront.net"

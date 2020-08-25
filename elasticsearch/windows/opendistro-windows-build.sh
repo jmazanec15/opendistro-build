@@ -3,15 +3,20 @@ set -e
 
 REPO_ROOT=`git rev-parse --show-toplevel`
 ROOT=`dirname $(realpath $0)`; echo $ROOT; cd $ROOT
-ES_VERSION=`$REPO_ROOT/bin/version-info --es`; echo $ES_VERSION
-OD_VERSION=`$REPO_ROOT/bin/version-info --od`; echo $OD_VERSION
+ES_VERSION=`$REPO_ROOT/bin/version-info --es`; echo ES_VERSION: $ES_VERSION
+OD_VERSION=`$REPO_ROOT/bin/version-info --od`; echo OD_VERSION: $OD_VERSION
+IS_CUT=`$REPO_ROOT/bin/version-info --is-cut`; echo IS_CUT: $IS_CUT
 S3_BUCKET="artifacts.opendistroforelasticsearch.amazon.com"
 ARTIFACTS_URL="https://d3g5vo6xdbdb9a.cloudfront.net"
 PACKAGE_NAME="opendistroforelasticsearch"
 TARGET_DIR="$ROOT/target"
+plugin_version=$OD_VERSION
 
 # Please DO NOT change the orders, they have dependencies
 PLUGINS=`$REPO_ROOT/bin/plugins-info windows`
+PLUGINS_ARRAY=( $PLUGINS )
+CUT_VERSIONS=`$REPO_ROOT/bin/plugins-info windows --cutversions`
+CUT_VERSIONS_ARRAY=( $CUT_VERSIONS )
 
 basedir="${ROOT}/elasticsearch-${ES_VERSION}/plugins"
 #PLUGINS_CHECKS=`$REPO_ROOT/bin/plugins-info zip | awk -F '/' '{print $2}' | sed "s@^@$basedir\/@g"`
@@ -27,9 +32,15 @@ unzip -q elasticsearch-oss-$ES_VERSION-windows-x86_64.zip
 rm -rf elasticsearch-oss-$ES_VERSION-windows-x86_64.zip
 
 # Install plugins
-for plugin_path in $PLUGINS
+for index in ${!PLUGINS_ARRAY[@]}
 do
-  plugin_latest=`aws s3api list-objects --bucket $S3_BUCKET --prefix "downloads/elasticsearch-plugins/${plugin_path}-${OD_VERSION}" --query 'Contents[].[Key]' --output text | sort | tail -n 1`
+  if [ "$IS_CUT" = "true" ]
+  then
+    plugin_version=${CUT_VERSIONS_ARRAY[$index]}
+  fi
+
+  plugin_path=${PLUGINS_ARRAY[$index]}
+  plugin_latest=`aws s3api list-objects --bucket $S3_BUCKET --prefix "downloads/elasticsearch-plugins/${plugin_path}-${plugin_version}" --query 'Contents[].[Key]' --output text | sort | tail -n 1`
   echo "installing $plugin_latest"
   $ROOT/elasticsearch-$ES_VERSION/bin/elasticsearch-plugin install --batch "${ARTIFACTS_URL}/${plugin_latest}"; \
 done
@@ -59,6 +70,6 @@ install4j8.0.4/bin/install4jc -d $TARGET_DIR -D sourcedir=./$PACKAGE_NAME-$OD_VE
 ls -ltr $TARGET_DIR
 
 # Upload top S3
-aws s3 cp $TARGET_DIR/*.exe s3://$S3_BUCKET/downloads/odfe-windows/staging/odfe-executable/
-aws s3 cp $TARGET_DIR/*.zip s3://$S3_BUCKET/downloads/odfe-windows/staging/odfe-window-zip/
-aws cloudfront create-invalidation --distribution-id E1VG5HMIWI4SA2 --paths "/downloads/*"
+#aws s3 cp $TARGET_DIR/*.exe s3://$S3_BUCKET/downloads/odfe-windows/staging/odfe-executable/
+#aws s3 cp $TARGET_DIR/*.zip s3://$S3_BUCKET/downloads/odfe-windows/staging/odfe-window-zip/
+#aws cloudfront create-invalidation --distribution-id E1VG5HMIWI4SA2 --paths "/downloads/*"
