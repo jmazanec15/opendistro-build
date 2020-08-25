@@ -58,7 +58,7 @@ for index in ${!PLUGINS_ARRAY[@]}
 do
   if [ "$IS_CUT" = "true" ]
   then
-    plugin_version=${CUT_VERSIONS[$index]}
+    plugin_version=${CUT_VERSIONS_ARRAY[$index]}
   fi
 
   plugin_path=${PLUGINS_ARRAY[$index]}

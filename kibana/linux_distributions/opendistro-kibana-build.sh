@@ -74,7 +74,7 @@ for index in ${!PLUGINS_ARRAY[@]}
 do
   if [ "$IS_CUT" = "true" ]
   then
-    plugin_version=${CUT_VERSIONS[$index]}
+    plugin_version=${CUT_VERSIONS_ARRAY[$index]}
   fi
   plugin_path=${PLUGINS_ARRAY[$index]}
   plugin_latest=`aws s3api list-objects --bucket $S3_BUCKET --prefix "downloads/kibana-plugins/${plugin_path}-${plugin_version}" --query 'Contents[].[Key]' --output text | sort | tail -n 1`
