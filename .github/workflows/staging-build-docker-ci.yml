@@ -3,8 +3,10 @@ name: Webhook Build ES Docker CI on Dispatch
 on: 
   #schedule:
   #  - cron: '0 0,15 * * *'
-  repository_dispatch:
-    types: [staging-build-docker-ci]
+  #repository_dispatch:
+  #  types: [staging-build-docker-ci]
+  push:
+    branches: [opendistro-infra-issues-251-2]
 
 jobs:
   build-es-docker:
