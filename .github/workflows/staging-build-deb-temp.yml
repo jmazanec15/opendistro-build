@@ -5,8 +5,8 @@ on:
   #  - cron: '0 10 * * *'
   repository_dispatch:
     types: [staging-build-deb-temp]
-  push:
-    branches: [opendistro-infra-issues-264-1]
+  #push:
+  #  branches: [opendistro-infra-issues-264-1]
 
 jobs:
   build-es-artifacts:
